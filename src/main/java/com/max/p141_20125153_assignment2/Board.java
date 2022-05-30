@@ -67,7 +67,7 @@ public class Board {
                 
         for(int col = 0; col < BOARD_SIZE; col++) {
             //Placing black PAWN's
-            //this.board[blackFront][col] = new Pawn(new Position(col, blackFront), Colour.BLACK);
+            this.board[blackFront][col] = new Pawn(new Position(col, blackFront), Colour.BLACK);
             
             //Placing Backrow
             switch(col) {
@@ -102,7 +102,7 @@ public class Board {
             }
              
             //Placing white PAWN's
-           // this.board[whiteFront][col] = new Pawn(new Position(col, whiteFront), Colour.WHITE);
+            this.board[whiteFront][col] = new Pawn(new Position(col, whiteFront), Colour.WHITE);
         }
     }
      

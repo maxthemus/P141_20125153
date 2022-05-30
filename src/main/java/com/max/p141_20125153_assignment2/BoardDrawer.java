@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -31,9 +32,16 @@ public class BoardDrawer extends JPanel implements MouseListener{
     
     //Draw panel
     private DrawPanel drawPanel;
+    
+    private Colour playerCurrentTurn;
+    
+    
 
     public BoardDrawer() {
         super();
+        
+        //BY DEFAULT TURN WILL BE WHITE
+        this.playerCurrentTurn = Colour.WHITE;
         
         this.boardTiles = new Tile[Board.BOARD_SIZE][Board.BOARD_SIZE];
         
@@ -57,6 +65,9 @@ public class BoardDrawer extends JPanel implements MouseListener{
     public BoardDrawer(Piece[][] boardPieces) {
         super();
         
+        //BY DEFAULT TURN WILL BE WHITE
+        this.playerCurrentTurn = Colour.WHITE;
+        
         this.boardPieces = boardPieces;
     
         this.boardTiles = new Tile[Board.BOARD_SIZE][Board.BOARD_SIZE];
@@ -67,7 +78,9 @@ public class BoardDrawer extends JPanel implements MouseListener{
         super.add(this.drawPanel, BorderLayout.NORTH);
     }
     
-    
+    public void setPlayerTurn(Colour currentTurn) {
+        this.playerCurrentTurn = currentTurn;
+    }
 
     public void setPieces(Piece[][] boardPieces) {
         this.boardPieces = boardPieces;
@@ -177,36 +190,53 @@ public class BoardDrawer extends JPanel implements MouseListener{
             
             //if piece hasn't been selected
             this.selectedPiece = this.boardPieces[yTile][xTile];
+            if(this.selectedPiece.pieceColour == this.playerCurrentTurn || this.selectedPiece.pieceColour == Colour.NONE) {
+                this.resetSelected();
+                this.boardTiles[yTile][xTile].setOutline(true);
             
-            this.resetSelected();
-            this.boardTiles[yTile][xTile].setOutline(true);
-            
-            //Getting avalible moves
-            if(this.boardPieces[yTile][xTile].pieceColour != Colour.NONE) {
-                this.piecePositions = this.selectedPiece.getLegalPositions(new Board(this.boardPieces));
-                this.outLineMoves();
+                //Getting avalible moves
+                if(this.boardPieces[yTile][xTile].pieceColour != Colour.NONE) {
+                    this.piecePositions = this.selectedPiece.getLegalPositions(new Board(this.boardPieces));
+                    this.outLineMoves();
+                }
             }
-            
         } else {
             //if piece has been seleted
             if(this.checkIfMove()) {
                 System.out.println("moving piece");
                 PieceController tempController = new PieceController(new Board(this.boardPieces), Colour.BLACK);
                 tempController.movePiece(this.selectedPiece, this.boardPieces[yTile][xTile]);
+                //Because moved must change player turn
+                if(this.playerCurrentTurn == Colour.BLACK) {
+                    this.playerCurrentTurn = Colour.WHITE;
+                } else if(this.playerCurrentTurn == Colour.WHITE) {
+                    this.playerCurrentTurn = Colour.BLACK;
+                }
+                
+                
                 
                 this.resetSelected();
                 this.piecePositions = null;
+                
+                //CHECK IF GAME HAS BEEN WON
+                Colour winner = this.checkWin();
+                if(winner != Colour.NONE) {
+                    JOptionPane.showMessageDialog(this, "PLAYER " + winner + " HAS WON THE GAME!");
+                    System.exit(0);
+                } 
             } else {
                 //If wasn't a move but a reselect
                 this.selectedPiece = this.boardPieces[yTile][xTile];
-                this.resetSelected();
-                System.out.println("OUTLINES");
-                this.boardTiles[yTile][xTile].setOutline(true);
-                
-                //Getting avalible moves
-                if(this.boardPieces[yTile][xTile].pieceColour != Colour.NONE) {
-                    this.piecePositions = this.selectedPiece.getLegalPositions(new Board(this.boardPieces));
-                    this.outLineMoves();
+                if(this.selectedPiece.pieceColour == this.playerCurrentTurn || this.selectedPiece.pieceColour == Colour.NONE) {
+                     this.resetSelected();
+                    System.out.println("OUTLINES");
+                    this.boardTiles[yTile][xTile].setOutline(true);
+
+                    //Getting avalible moves
+                    if(this.boardPieces[yTile][xTile].pieceColour != Colour.NONE) {
+                        this.piecePositions = this.selectedPiece.getLegalPositions(new Board(this.boardPieces));
+                        this.outLineMoves();
+                    }
                 }
             }
         }
@@ -231,7 +261,29 @@ public class BoardDrawer extends JPanel implements MouseListener{
     public void mouseExited(MouseEvent e) {
     }
 
-    
+    private Colour checkWin() {
+        boolean foundKingWhite = false;
+        boolean foundKingBlack = false;
+        
+         for(int row = 0; row < Board.BOARD_SIZE; row++) {
+            for(int col = 0; col < Board.BOARD_SIZE; col++) {
+                if(this.boardPieces[col][row].getClass() == (new King(null, null)).getClass()) {
+                    if(this.boardPieces[col][row].pieceColour == Colour.BLACK) {
+                        foundKingBlack = true;
+                    } else if(this.boardPieces[col][row].pieceColour == Colour.WHITE) {
+                        foundKingWhite = true;
+                    }
+                }
+            }
+         }
+         
+         if(!foundKingBlack) {
+             return Colour.WHITE;
+         } else if(!foundKingWhite) {
+             return Colour.BLACK;
+         } 
+         return Colour.NONE;
+    }
     
     
     public static void main(String[] args) {
@@ -243,6 +295,5 @@ public class BoardDrawer extends JPanel implements MouseListener{
         
         frame.setVisible(true);
         
-        System.out.println("HELlo world!");
     }    
 }
