@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.max.p141_20125153_assignment2.BoardTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.028 s <<< FAILURE! - in com.max.p141_20125153_assignment2.BoardTest
+isDirForLocallyStoredGameState  Time elapsed: 0.024 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at com.max.p141_20125153_assignment2.BoardTest.isDirForLocallyStoredGameState(BoardTest.java:97)
+

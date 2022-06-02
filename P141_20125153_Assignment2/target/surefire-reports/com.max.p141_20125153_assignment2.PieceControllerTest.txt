@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.max.p141_20125153_assignment2.PieceControllerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.143 s - in com.max.p141_20125153_assignment2.PieceControllerTest

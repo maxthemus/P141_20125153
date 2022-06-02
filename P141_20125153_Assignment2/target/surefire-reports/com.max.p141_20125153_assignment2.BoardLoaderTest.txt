@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.max.p141_20125153_assignment2.BoardLoaderTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s - in com.max.p141_20125153_assignment2.BoardLoaderTest

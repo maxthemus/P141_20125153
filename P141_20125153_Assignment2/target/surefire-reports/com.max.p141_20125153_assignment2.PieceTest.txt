@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.max.p141_20125153_assignment2.PieceTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s - in com.max.p141_20125153_assignment2.PieceTest
