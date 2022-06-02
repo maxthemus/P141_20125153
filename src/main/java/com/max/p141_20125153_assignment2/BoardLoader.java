@@ -137,9 +137,9 @@ public class BoardLoader {
         
         //NOW READING THE FILE
         if(line.compareTo("B") == 0) {
-            currentTurn = Colour.BLACK;
+            BoardDrawer.playerCurrentTurn = Colour.BLACK;
         } else if(line.compareTo("W") == 0) {
-            currentTurn = Colour.WHITE;
+            BoardDrawer.playerCurrentTurn = Colour.WHITE;
         } else {
             System.out.println("FILE WAS CORRUPT");
             throw new IOException();
@@ -200,6 +200,20 @@ public class BoardLoader {
         gameLoad.close();
         
         return tempBoard;
+    }
+    
+    
+    public static void clearSaveFile () {
+        System.out.println("WAS CALLED -----------------------");
+        
+        try {
+            File temp = new File("./game-saves/save_one.txt");
+            temp.delete();
+            temp.createNewFile();
+        } catch (Exception e) {
+            System.out.println("SORRY YOU HAVE BROKEN THE PROGRAM STOP HACKING PLEASE");
+            System.exit(1);
+        }
     }
     
 }

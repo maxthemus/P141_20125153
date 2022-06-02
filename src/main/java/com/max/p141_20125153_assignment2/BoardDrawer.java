@@ -8,10 +8,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -19,7 +25,7 @@ import javax.swing.JPanel;
  *
  * @author Maxth
  */
-public class BoardDrawer extends JPanel implements MouseListener{
+public class BoardDrawer extends JPanel implements MouseListener, ActionListener {
     //Fields for holding board positions and tiles positions
     private Tile[][] boardTiles;
     private Piece[][] boardPieces;
@@ -32,20 +38,31 @@ public class BoardDrawer extends JPanel implements MouseListener{
     
     //Draw panel
     private DrawPanel drawPanel;
+    private JPanel infoPanel;
     
-    private Colour playerCurrentTurn;
+    public static Colour playerCurrentTurn;
     
+    private Menu mainMenu;
     
+    //Player Label Field
+    JLabel playerTurnLabel;
+    private final String currentPlayerLabelString = "Player Current Turn = ";
 
-    public BoardDrawer() {
+    public BoardDrawer( Menu mainMenu) {
         super();
         
+        this.mainMenu = mainMenu;
+        
         //BY DEFAULT TURN WILL BE WHITE
-        this.playerCurrentTurn = Colour.WHITE;
+        if(this.playerCurrentTurn == null) {
+           this.playerCurrentTurn = Colour.WHITE; 
+        }
         
         this.boardTiles = new Tile[Board.BOARD_SIZE][Board.BOARD_SIZE];
         
         this.resetTiles();
+        
+        this.playerCurrentTurn = Colour.WHITE;
         
 
         //TEMP SETTING PIECES TEST
@@ -54,19 +71,24 @@ public class BoardDrawer extends JPanel implements MouseListener{
         //TEMP DONE
         
         this.drawPanel = new DrawPanel();
-        super.add(this.drawPanel, BorderLayout.NORTH);
+        super.add(this.drawPanel, BorderLayout.WEST);
         
         this.drawPanel.addMouseListener(this);
         
         this.mouseClickedX = -1;
         this.mouseClickedY = -1;
+        
+       this.setUpInfoPanel();
     }
 
-    public BoardDrawer(Piece[][] boardPieces) {
+    public BoardDrawer(Piece[][] boardPieces, Menu mainMenu) {
         super();
         
-        //BY DEFAULT TURN WILL BE WHITE
-        this.playerCurrentTurn = Colour.WHITE;
+        this.mainMenu = mainMenu;
+        
+        if(this.playerCurrentTurn == null) {
+           this.playerCurrentTurn = Colour.WHITE; 
+        }
         
         this.boardPieces = boardPieces;
     
@@ -75,7 +97,30 @@ public class BoardDrawer extends JPanel implements MouseListener{
         this.resetTiles();
         
         this.drawPanel = new DrawPanel();
-        super.add(this.drawPanel, BorderLayout.NORTH);
+        super.add(this.drawPanel, BorderLayout.WEST);
+        
+        this.drawPanel.addMouseListener(this);
+        
+        this.mouseClickedX = -1;
+        this.mouseClickedY = -1;
+        
+        this.setUpInfoPanel();
+    }
+    
+    private void setUpInfoPanel() {
+        //INFO PANEL
+        this.infoPanel = new JPanel();
+        this.infoPanel.setPreferredSize(new Dimension(160, 65));
+        this.infoPanel.setBackground(Color.LIGHT_GRAY);
+        
+        JButton exitButton = new JButton("EXIT and Save Game");
+        exitButton.addActionListener(this);
+        
+        playerTurnLabel = new JLabel(currentPlayerLabelString + (this.playerCurrentTurn == Colour.WHITE ? "White" : "Black"));
+        this.infoPanel.add(playerTurnLabel, BorderLayout.NORTH);
+        this.infoPanel.add(exitButton, BorderLayout.SOUTH);
+        
+        super.add(this.infoPanel, BorderLayout.LINE_END);
     }
     
     public void setPlayerTurn(Colour currentTurn) {
@@ -84,6 +129,10 @@ public class BoardDrawer extends JPanel implements MouseListener{
 
     public void setPieces(Piece[][] boardPieces) {
         this.boardPieces = boardPieces;
+    }
+    
+    private void saveGame() {
+        BoardLoader.saveGame(new Board(this.boardPieces), playerCurrentTurn);
     }
     
     //Setting all the tiles back to the original state
@@ -172,6 +221,7 @@ public class BoardDrawer extends JPanel implements MouseListener{
     //Mouselistener Methods
     @Override
     public void mouseClicked(MouseEvent e) {
+
         int xOnPanel = e.getX();
         int yOnPanel = e.getY();
         
@@ -198,7 +248,7 @@ public class BoardDrawer extends JPanel implements MouseListener{
                 if(this.boardPieces[yTile][xTile].pieceColour != Colour.NONE) {
                     this.piecePositions = this.selectedPiece.getLegalPositions(new Board(this.boardPieces));
                     this.outLineMoves();
-                }
+                } 
             }
         } else {
             //if piece has been seleted
@@ -213,7 +263,11 @@ public class BoardDrawer extends JPanel implements MouseListener{
                     this.playerCurrentTurn = Colour.BLACK;
                 }
                 
+                //Saving game
+                this.saveGame();
                 
+                //Updating the CurrentPlayer label
+                this.playerTurnLabel.setText(currentPlayerLabelString + (this.playerCurrentTurn == Colour.WHITE ? "White" : "Black"));
                 
                 this.resetSelected();
                 this.piecePositions = null;
@@ -222,7 +276,10 @@ public class BoardDrawer extends JPanel implements MouseListener{
                 Colour winner = this.checkWin();
                 if(winner != Colour.NONE) {
                     JOptionPane.showMessageDialog(this, "PLAYER " + winner + " HAS WON THE GAME!");
-                    System.exit(0);
+                    Menu.playingGame = false;
+                    BoardLoader.clearSaveFile();
+                    this.setVisible(false);
+                    this.mainMenu.closeFrame();
                 } 
             } else {
                 //If wasn't a move but a reselect
@@ -237,6 +294,9 @@ public class BoardDrawer extends JPanel implements MouseListener{
                         this.piecePositions = this.selectedPiece.getLegalPositions(new Board(this.boardPieces));
                         this.outLineMoves();
                     }
+                } else {
+                    //Send message Saying sorry it is the other players turn
+                    JOptionPane.showMessageDialog(this, "Sorry it is " + (this.playerCurrentTurn == Colour.WHITE ? "White" : "Black") + "'s turn");
                 }
             }
         }
@@ -283,17 +343,18 @@ public class BoardDrawer extends JPanel implements MouseListener{
              return Colour.BLACK;
          } 
          return Colour.NONE;
+        }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource().getClass() == (new JButton()).getClass()) {
+            //Save the game
+            this.saveGame();
+            
+            mainMenu.playingGame = false;
+            mainMenu.closeFrame();
+        }
     }
     
     
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("TEST GUI");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new BoardDrawer());
-        frame.pack();
-        frame.setSize(615,639);
-        
-        frame.setVisible(true);
-        
-    }    
 }
