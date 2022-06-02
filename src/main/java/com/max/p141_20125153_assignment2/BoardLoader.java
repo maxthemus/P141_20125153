@@ -203,9 +203,7 @@ public class BoardLoader {
     }
     
     
-    public static void clearSaveFile () {
-        System.out.println("WAS CALLED -----------------------");
-        
+    public static void clearSaveFile () {        
         try {
             File temp = new File("./game-saves/save_one.txt");
             temp.delete();

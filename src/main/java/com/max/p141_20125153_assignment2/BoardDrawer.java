@@ -195,7 +195,6 @@ public class BoardDrawer extends JPanel implements MouseListener, ActionListener
     }
     
     private boolean checkIfMove() {
-        System.out.println("in here");
         if(this.piecePositions != null) {
             for(int i = 0; i < this.piecePositions.size(); i++) {
                 if((this.piecePositions.get(i).getxCord() == this.mouseClickedX) && this.piecePositions.get(i).getyCord() == this.mouseClickedY) {
@@ -228,15 +227,12 @@ public class BoardDrawer extends JPanel implements MouseListener, ActionListener
         int xTile = xOnPanel / 75;
         int yTile = yOnPanel / 75;
         
-        System.out.println("Mouse Clicked at (" + xTile + ", " + yTile + ")");
-        
         this.mouseClickedX = xTile;
         this.mouseClickedY = yTile;
         
         //STEPS
         //Check if selected Piece == null
         if(this.selectedPiece == null) {
-            System.out.println("Piece just selected");
             
             //if piece hasn't been selected
             this.selectedPiece = this.boardPieces[yTile][xTile];
@@ -253,7 +249,6 @@ public class BoardDrawer extends JPanel implements MouseListener, ActionListener
         } else {
             //if piece has been seleted
             if(this.checkIfMove()) {
-                System.out.println("moving piece");
                 PieceController tempController = new PieceController(new Board(this.boardPieces), Colour.BLACK);
                 tempController.movePiece(this.selectedPiece, this.boardPieces[yTile][xTile]);
                 //Because moved must change player turn
@@ -285,8 +280,7 @@ public class BoardDrawer extends JPanel implements MouseListener, ActionListener
                 //If wasn't a move but a reselect
                 this.selectedPiece = this.boardPieces[yTile][xTile];
                 if(this.selectedPiece.pieceColour == this.playerCurrentTurn || this.selectedPiece.pieceColour == Colour.NONE) {
-                     this.resetSelected();
-                    System.out.println("OUTLINES");
+                    this.resetSelected();
                     this.boardTiles[yTile][xTile].setOutline(true);
 
                     //Getting avalible moves
@@ -350,7 +344,8 @@ public class BoardDrawer extends JPanel implements MouseListener, ActionListener
         if(e.getSource().getClass() == (new JButton()).getClass()) {
             //Save the game
             this.saveGame();
-            
+            JOptionPane.showMessageDialog(this, "Game state is saved, Click Load game to continue the game!");
+
             mainMenu.playingGame = false;
             mainMenu.closeFrame();
         }

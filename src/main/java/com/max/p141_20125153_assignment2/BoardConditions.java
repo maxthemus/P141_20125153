@@ -142,7 +142,6 @@ public class BoardConditions {
         for(int i = 0; i < this.avaliablesMovesBlack.size(); i++) {
             if(this.avaliablesMovesBlack.get(i).getxCord() == blackKing.getxCord() && this.avaliablesMovesBlack.get(i).getyCord() == blackKing.getyCord()) {
                 //BECAUSE WHITE IS IN CHECK
-                System.out.println(this.avaliablesMovesBlack.get(i).toString());
                 return Colour.WHITE;
             }
         }

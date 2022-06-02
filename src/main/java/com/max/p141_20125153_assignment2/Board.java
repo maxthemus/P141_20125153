@@ -31,14 +31,6 @@ public class Board {
         this.board = new Piece[BOARD_SIZE][BOARD_SIZE];
         
         this.resetBoard();
-        
-        //[DOWN][ACCROSS]
-        //TEMP SECTION        
-        /*
-        this.board[4][4] = new Rook(new Position(4, 4), Colour.WHITE);
-        this.board[4][4].getLegalPositions(this);
-        System.out.println(this.board[4][4].allLegalPositionToString());
-        */
     }
 
     //constructor for existing board

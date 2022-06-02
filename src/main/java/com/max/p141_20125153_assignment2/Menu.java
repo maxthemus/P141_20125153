@@ -72,14 +72,14 @@ public class Menu extends JPanel implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        System.out.println("ACTION PERFORMED : " + e.getSource());
-        
+    public void actionPerformed(ActionEvent e) {        
         if(e.getSource() == this.exitButton) {
             System.exit(0);
         } else if(e.getSource() == this.playButton) {
             if(this.playingGame == false) {
                 this.createNewGame();
+            } else {
+                JOptionPane.showMessageDialog(this, "Sorry game is already being played");
             }
         } else if(e.getSource() == this.loadButton) {
             if(this.playingGame == false) {
@@ -102,8 +102,10 @@ public class Menu extends JPanel implements ActionListener {
 
                 frame.setVisible(true);
                 this.playingGame = true;
+            } else {
+                JOptionPane.showMessageDialog(this, "Sorry game is already being played");
             }
-        }
+        } 
     }
     
     private void createNewGame() {

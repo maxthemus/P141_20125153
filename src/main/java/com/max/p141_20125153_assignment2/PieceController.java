@@ -59,9 +59,7 @@ public class PieceController {
         temp.setPosition(new Position(too.getPiecePosition().getxCord(), too.getPiecePosition().getyCord()));
         temp.clearLegalPositions();
         tempBoard[too.getPiecePosition().getyCord()][too.getPiecePosition().getxCord()] = temp;
-        
-        System.out.println("+-----------+");
-        
+                
         this.board = new Board(tempBoard);
     }
 
